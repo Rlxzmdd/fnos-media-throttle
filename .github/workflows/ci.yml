@@ -50,6 +50,7 @@ jobs:
           pnpm --dir app/ui build
           version=$(awk -F= '/^version[[:space:]]*=/{gsub(/[[:space:]]/, "", $2); print $2}' packaging/manifest)
           test "$version" = "$(node -p "JSON.parse(require('fs').readFileSync('app/ui/package.json')).version")"
+          test "$version" = "$(sed -n 's/^var Version = "\([^"]*\)"/\1/p' app/buildinfo/version.go)"
 
   package:
     needs: verify

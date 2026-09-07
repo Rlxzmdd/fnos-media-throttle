@@ -62,3 +62,12 @@ func (e *Engine) dueDownloader(downloader Downloader) bool {
 	e.lastDownloaders[downloader.ID] = time.Now()
 	return true
 }
+
+// ResetSchedule makes imported resources eligible for an immediate poll even
+// when their IDs overlap resources from the previous configuration.
+func (e *Engine) ResetSchedule() {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.lastLibraries = map[int64]time.Time{}
+	e.lastDownloaders = map[int64]time.Time{}
+}

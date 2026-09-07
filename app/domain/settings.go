@@ -11,6 +11,7 @@ const (
 type Settings struct {
 	Debug       bool   `json:"debug"`
 	ReleaseMode string `json:"releaseMode"`
+	AppVersion  string `json:"appVersion,omitempty"`
 }
 
 func (s *Settings) Normalize() error {

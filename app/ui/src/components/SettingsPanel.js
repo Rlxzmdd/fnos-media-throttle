@@ -1,7 +1,7 @@
 // Presentational settings view. Persistence and errors remain in the controller.
 export default {
   props: ['settings', 'theme', 'busy'],
-  emits: ['update:theme', 'save'],
+  emits: ['update:theme', 'save', 'export-config', 'import-config'],
   data: () => ({
     themes: [{ value: 'system', label: '跟随系统' }, { value: 'light', label: '浅色' }, { value: 'dark', label: '深色' }],
     releaseModes: [
@@ -10,6 +10,14 @@ export default {
       { value: 'maximum', label: '设为最高限速' }
     ]
   }),
+  methods: {
+    chooseConfig () { this.$refs.configFile?.click() },
+    importSelected (event) {
+      const file = event.target.files?.[0]
+      event.target.value = ''
+      if (file) this.$emit('import-config', file)
+    }
+  },
   template: `
     <section class="settings-card">
       <div><h2>外观</h2><p>跟随飞牛系统主题，或手动选择应用外观。</p></div>
@@ -40,8 +48,21 @@ export default {
           @change="$emit('save', {debug: $event.target.checked})"><span></span>
       </label>
     </section>
+    <section class="settings-card backup-settings">
+      <div>
+        <h2>配置备份</h2>
+        <p>导出设置、影视库、下载器和绑定链，可用于迁移或恢复；运行日志不会写入备份。</p>
+        <p>当前应用版本：v{{settings.appVersion || '开发版'}}</p>
+        <p class="backup-warning">备份包含下载器密码和影视库 API Key，请勿公开分享。</p>
+      </div>
+      <div class="backup-actions">
+        <button type="button" class="backup-button secondary" :disabled="busy" @click="$emit('export-config')">导出配置</button>
+        <button type="button" class="backup-button primary" :disabled="busy" @click="chooseConfig">导入配置</button>
+        <input ref="configFile" class="visually-hidden" type="file" accept="application/json,.json" @change="importSelected">
+      </div>
+    </section>
     <section class="settings-card about">
-      <div><div><h2>观影联动限速</h2><p>FNOS 原生应用 · 绑定链架构</p></div></div>
+      <div><div><h2>观影联动限速</h2><p>FNOS 原生应用 · 绑定链架构 · v{{settings.appVersion || '开发版'}}</p></div></div>
       <small>作者：isZhous</small>
     </section>
   `

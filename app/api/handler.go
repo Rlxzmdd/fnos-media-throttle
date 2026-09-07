@@ -35,6 +35,8 @@ func (a Handler) routes() http.Handler {
 	m.HandleFunc("/api/v1/chains/", a.chain)
 	m.HandleFunc("/api/v1/events", a.events)
 	m.HandleFunc("/api/v1/settings", a.settings)
+	m.HandleFunc("/api/v1/config/export", a.exportConfig)
+	m.HandleFunc("/api/v1/config/import", a.importConfig)
 	m.Handle("/", static())
 	return security(a.commands(m))
 }
@@ -84,7 +86,10 @@ func fail(w http.ResponseWriter, status int, e error) {
 	jsonOut(w, status, map[string]string{"error": e.Error()})
 }
 func decode(r *http.Request, v any) error {
-	d := json.NewDecoder(io.LimitReader(r.Body, 1<<20))
+	return decodeLimit(r, v, 1<<20)
+}
+func decodeLimit(r *http.Request, v any, limit int64) error {
+	d := json.NewDecoder(io.LimitReader(r.Body, limit))
 	d.DisallowUnknownFields()
 	return d.Decode(v)
 }

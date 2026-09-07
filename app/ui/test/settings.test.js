@@ -24,7 +24,25 @@ test('settings component renders all release modes and selected state', async ()
     for (const label of ['恢复原值', '解除限速', '设为最高限速', 'Debug 模式']) assert.ok(html.includes(label))
     assert.equal((html.match(/aria-pressed="true"/g) || []).length, 2)
     assert.ok(html.includes('checked'))
+    assert.ok(html.includes('配置备份'))
+    assert.ok(html.includes('导出配置'))
+    assert.match(html, /class="backup-button secondary"[^>]*>导出配置/)
+    assert.match(html, /class="backup-button primary"[^>]*>导入配置/)
   }
+})
+
+test('settings shows the packaged application version', async () => {
+  const html = await renderToString(createSSRApp(SettingsPanel, {
+    settings: { debug: false, releaseMode: 'original', appVersion: '0.9.17' }, theme: 'system', busy: false
+  }))
+  assert.ok(html.includes('v0.9.17'))
+})
+
+test('backup actions use equal fnOS button geometry', async () => {
+  const css = await readFile(new URL('../src/style.css', import.meta.url), 'utf8')
+  assert.match(css, /\.backup-actions\{[^}]*grid-template-columns:repeat\(2,96px\)/)
+  assert.match(css, /\.backup-actions \.backup-button\{[^}]*width:96px[^}]*height:36px[^}]*border:0/)
+  assert.match(css, /\.backup-actions \.backup-button\.secondary\{[^}]*color:var\(--blue\)[^}]*box-shadow:inset 0 0 0 1px var\(--blue\)/)
 })
 
 test('fresh forms do not share rule objects and default to fnOS', () => {

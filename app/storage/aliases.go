@@ -9,6 +9,7 @@ type DirectionRule = domain.DirectionRule
 type ChainRule = domain.ChainRule
 type Settings = domain.Settings
 type Event = domain.Event
+type ConfigBackup = domain.ConfigBackup
 
 const (
 	LibraryFNOS            = domain.LibraryFNOS

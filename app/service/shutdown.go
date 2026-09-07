@@ -45,3 +45,11 @@ func (e *Engine) releaseAll(ctx context.Context, perDownloaderTimeout time.Durat
 	}
 	return errors.Join(restoreErrors...)
 }
+
+// PrepareConfigImport serializes import with API writes and releases any
+// active takeover before the database is replaced.
+func (e *Engine) PrepareConfigImport(ctx context.Context, perDownloaderTimeout time.Duration) error {
+	return e.Coordinate(ctx, func(ctx context.Context) error {
+		return e.releaseAll(ctx, perDownloaderTimeout)
+	})
+}
