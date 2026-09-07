@@ -1,0 +1,4 @@
+#!/bin/sh
+# fnOS creates package data paths after install_init. Keep this hook side-effect
+# free so a missing TRIM_PKGVAR cannot abort installation.
+exit 0

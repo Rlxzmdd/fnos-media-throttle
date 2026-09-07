@@ -1,0 +1,34 @@
+#!/bin/sh
+set -eu
+PIDFILE="$TRIM_PKGVAR/fnos-media-throttle.pid"
+LOGFILE="$TRIM_PKGVAR/fnos-media-throttle.log"
+case "${1:-}" in
+  start)
+    if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then exit 0; fi
+    mkdir -p "$TRIM_PKGVAR"
+    DATA_DIR="$TRIM_PKGVAR" UI_DIR="$TRIM_APPDEST/ui" PORT="$TRIM_SERVICE_PORT" "$TRIM_APPDEST/bin/fnos-media-throttle" >>"$LOGFILE" 2>&1 &
+    echo $! > "$PIDFILE"
+    ;;
+  stop)
+    if [ -f "$PIDFILE" ]; then
+      pid="$(cat "$PIDFILE")"
+      if kill -0 "$pid" 2>/dev/null; then
+        kill "$pid" 2>/dev/null || true
+        waited=0
+        while kill -0 "$pid" 2>/dev/null && [ "$waited" -lt 30 ]; do
+          sleep 1
+          waited=$((waited + 1))
+        done
+        if kill -0 "$pid" 2>/dev/null; then
+          echo "graceful shutdown timed out after 30s; forcing process $pid to stop" >>"$LOGFILE"
+          kill -KILL "$pid" 2>/dev/null || true
+        fi
+      fi
+      rm -f "$PIDFILE"
+    fi
+    ;;
+  status)
+    [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null
+    ;;
+  *) echo "usage: $0 {start|stop|status}" >&2; exit 2;;
+esac

@@ -1,0 +1,2 @@
+#!/bin/sh
+"$TRIM_APPDEST/cmd/main" stop || true

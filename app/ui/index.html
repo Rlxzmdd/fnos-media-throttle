@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="/images/icon_64.png" />
+    <title>影视观看限速器</title>
+  </head>
+  <body>
+    <div id="app"><p style="color:#e8eef9;padding:24px">正在加载影视观看限速器…</p></div>
+    <script>
+      window.__mediaThrottleBootError = function (error) {
+        var root = document.getElementById('app')
+        if (!root) return
+        var message = error && error.message ? error.message : String(error || '未知错误')
+        var safe = message.replace(/[&<>"']/g, function (character) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]
+        })
+        root.innerHTML = '<div style="box-sizing:border-box;margin:32px;padding:24px;border:1px solid #56383b;border-radius:12px;background:#211719;color:#f3f3f3;font:14px/1.7 system-ui,sans-serif"><strong style="display:block;font-size:18px;margin-bottom:8px">管理界面启动失败</strong><p style="margin:0;color:#d7b5b8">' + safe + '</p><p style="margin:12px 0 0;color:#a8a8a8">请刷新页面；若仍失败，请查看应用日志。</p></div>'
+      }
+      window.addEventListener('error', function (event) { window.__mediaThrottleBootError(event.error || event.message) })
+      window.addEventListener('unhandledrejection', function (event) { window.__mediaThrottleBootError(event.reason) })
+      setTimeout(function () {
+        if (!window.__mediaThrottleUIReady) window.__mediaThrottleBootError('前端资源未能完成加载')
+      }, 8000)
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

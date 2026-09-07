@@ -1,0 +1,13 @@
+{
+  ".url": {
+    "fnos-media-throttle.APPLICATION": {
+      "title": "影视观看限速器",
+      "icon": "images/icon_{0}.png",
+      "type": "iframe",
+      "protocol": "http",
+      "port": "18788",
+      "url": "/",
+      "allUsers": true
+    }
+  }
+}
